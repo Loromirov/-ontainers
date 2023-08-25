@@ -1,17 +1,41 @@
-Задание 1:
-1) запустить контейнер с ubuntu, используя механизм LXC
-2) ограничить контейнер 256 Мб ОЗУ и проверить, что ограничение работает
+Проверяем установку Docker
+docker run docker/whalesay cowsay Hello, Docker!
 
-apt-get install lxc debootstrap bridge-utils lxc-templates
-apt-get install lxd-installer
-lxd init
-lxc storage list
-И создаем контейнер
-lxc-create -n test12 -t ubuntu -f /usr/share/doc/lxc/example/lxc-veth.conf
-![2023-08-20_21-43-38](https://github.com/Loromirov/-ontainers/assets/117039676/7c9e8e83-a930-4b79-a5da-e30ce58aca94)
+![2023-08-25_13-02-34](https://github.com/Loromirov/-ontainers/assets/117039676/8f8ea772-9a26-4523-957b-e63ff07d25d0)
 
-nano /var/lib/lxc/test123/config-открываем
-и дальше появляется надпись - 
-![2023-08-20_22-05-23](https://github.com/Loromirov/-ontainers/assets/117039676/fedf05cd-f148-4129-a69e-277aaa845301)
+Запустим контейнер из образа Ubuntu и войдем в него:
+docker run -it -h GB --name gb-test ubuntu:22.10
+Создадим новую директорию в корне:
 
-пробовал переустанавливать все с начала, но все равно выходит так. Подскажите, как исправить?
+mkdir /example
+Создадим файл "passwords.txt" и добавим в него какие-либо данные
+
+touch /example/passwords.txt
+echo "123test" >> /example/passwords.txt
+exit
+![Снимок экрана 2023-08-25 133024](https://github.com/Loromirov/-ontainers/assets/117039676/b000cd61-dd0d-4f61-abe6-d9c49b1f14a0)
+
+
+Остановим контейнер и запустим его снова.
+docker stop gb-test
+docker start gb-test
+docker exec -it gb-test bash
+cat /example/passwords.txt
+exit
+
+![Снимок экрана 2023-08-25 133537](https://github.com/Loromirov/-ontainers/assets/117039676/b77e3186-9652-45be-9479-6162f81149f4)
+
+
+Наши данные сохранятся, так как мы не пересоздавали контейнер.
+
+Удалим контейнер и создадим его заново, используя те же команды.
+docker stop gb-test
+docker rm gb-test
+docker run -it -h GB --name gb-test ubuntu:22.10
+ls -l
+exit
+docker stop gb-test
+
+docker rm gb-test
+
+![Снимок экрана 2023-08-25 133034](https://github.com/Loromirov/-ontainers/assets/117039676/06a7b4a8-6de5-44e7-bf69-5cdf532050a2)
